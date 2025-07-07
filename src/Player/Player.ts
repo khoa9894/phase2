@@ -27,8 +27,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite{
         //set up player
         this.setPosition(params.x,params.y);
         this.setTint(0x00aa00);
-        this.setGravityY(1300); 
-        this.setCollideWorldBounds(true); 
+        this.setGravityY(2300); 
         this.setBounce(0); 
         this.setSize(60,60); 
          this.setScale(2)
@@ -69,7 +68,7 @@ enableCollision() {
     getIdleState():IPlayerState{return this.Idle}
     getJumpState():IPlayerState{return this.Jump}
     getRocket():IPlayerState{return this.Rocket}
-
+    getCurrentState():IPlayerState{return this.currentState}
     getDeathState():IPlayerState{return this.DeathState}
 } 
       

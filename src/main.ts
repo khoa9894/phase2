@@ -1,7 +1,8 @@
 import Phaser from 'phaser'
 
-import HelloWorldScene from './scenes/HelloWorldScene'
-
+import {PlayScene} from './scenes/PlayScene'
+import { PreloadScene } from './scenes/PreloadScene'
+import { MenuScene } from './scenes/MenuScene'
 const config: Phaser.Types.Core.GameConfig = {
 	type: Phaser.AUTO,
  	width: window.innerWidth,
@@ -17,10 +18,11 @@ const config: Phaser.Types.Core.GameConfig = {
 		}
 	},
 
-	scene: [HelloWorldScene]
+	scene: [PreloadScene,MenuScene,PlayScene]
 }
 
 const game = new Phaser.Game(config)
+game.scene.start('PreloadScene')
 
 document.body.style.margin = '0'
 document.body.style.padding = '0'

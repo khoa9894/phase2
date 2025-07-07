@@ -6,10 +6,10 @@ export class Rocket implements IPlayerState {
     private Player: Player;
     private thrustEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
     private isThrusting: boolean = false;
-    private thrustPower: number = 1500; // Lực đẩy khi nhấn (tăng mạnh)
-    private maxUpwardSpeed: number = -600; // Tốc độ tối đa khi bay lên
-    private gravityScale: number = 500; // Gravity khi không nhấn (giảm mạnh)
-
+    private thrustPower: number = 1500; 
+    private maxUpwardSpeed: number = -600; 
+    private gravityScale: number = 500; 
+   // private size:{x:0,y:0}
     constructor(scene: Phaser.Scene, player: Player) {
         this.Player = player;
         
@@ -40,7 +40,6 @@ export class Rocket implements IPlayerState {
         if (this.Player.body.velocity.y < this.maxUpwardSpeed) {
             this.Player.setVelocityY(this.maxUpwardSpeed);
         }
-        
         const velocityY = this.Player.body.velocity.y;
         if (velocityY < -100) {
             this.Player.setRotation(-0.5);
@@ -63,10 +62,8 @@ export class Rocket implements IPlayerState {
             this.Player.setVelocityY(currentVelocityY - 50);
         }
         
-        // Cập nhật vị trí particle effect
         this.thrustEmitter.startFollow(this.Player, 0, 35);
         
-        // Tăng cường hiệu ứng particle khi thrust
         this.thrustEmitter.setQuantity(8);
         this.thrustEmitter.setFrequency(20);
     }
@@ -89,7 +86,8 @@ export class Rocket implements IPlayerState {
         this.isThrusting = false;
         this.Player.setRotation(0);
         this.Player.enableCollision();
-        
+        this.Player.body.setSize(80,43)
+
         this.Player.setVelocityY(0);
         this.Player.setAccelerationY(0);
     }
@@ -103,7 +101,8 @@ export class Rocket implements IPlayerState {
         
         this.Player.setAccelerationY(0);
         this.Player.setRotation(0);
-        
+        this.Player.body.setSize(122,120)
+
         this.Player.setGravityY(1300);
     }
 }

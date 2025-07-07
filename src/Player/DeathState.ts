@@ -46,7 +46,7 @@ export class DeathState implements IPlayerState {
                 // Rotate particles
                 particle.rotation += particle.rotationSpeed * (deltaTime / 1000);
                 
-                if (particle.alpha <= 0 || particle.y > this.scene.cameras.main.height + 150) {
+                if (particle.alpha <= 0 || particle.y > this.scene.cameras.main.height + 150+128*8) {
                     particle.destroy();
                 }
             }
@@ -76,14 +76,13 @@ export class DeathState implements IPlayerState {
             const randomAngle = angle + (Math.random() - 0.5) * 0.5;
             
             const particle = this.scene.add.rectangle(
-                playerX + (Math.random() - 0.5) * 20, 
-                playerY + (Math.random() - 0.5) * 20,
+                playerX + (Math.random() - 0.5) * 10, 
+                playerY + (Math.random() - 0.5) * 10,
                 8 + Math.random() * 8,  
                 8 + Math.random() * 8,
                 0xFFFF00 
             );
                         
-            // Set initial velocity
             const velocity = this.EXPLOSION_FORCE + Math.random() * 100;
             (particle as any).velocityX = Math.cos(randomAngle) * velocity;
             (particle as any).velocityY = Math.sin(randomAngle) * velocity - 200; 
@@ -91,19 +90,17 @@ export class DeathState implements IPlayerState {
             // Add rotation
             (particle as any).rotationSpeed = (Math.random() - 0.5) * 10;
             
-            // Add to particle group
             this.deathParticles.add(particle);
         }
         
-        // Create additional spark effects
         this.createSparkEffect(playerX, playerY);
     }
     
     private createSparkEffect(x: number, y: number): void {
         for (let i = 0; i < 8; i++) {
             const spark = this.scene.add.circle(
-                x + (Math.random() - 0.5) * 10,
-                y + (Math.random() - 0.5) * 10,
+                x + (Math.random() - 0.5) * 0.1,
+                y + (Math.random() - 0.5) * 0.1,
                 2 + Math.random() * 3,
                 0xffff00
             );
@@ -114,7 +111,7 @@ export class DeathState implements IPlayerState {
             (spark as any).velocityX = Math.cos(angle) * velocity;
             (spark as any).velocityY = Math.sin(angle) * velocity - 100;
             (spark as any).rotationSpeed = (Math.random() - 0.5) * 15;
-            
+            console.log('s',spark.x,spark.y)
             this.deathParticles.add(spark);
         }
     }
