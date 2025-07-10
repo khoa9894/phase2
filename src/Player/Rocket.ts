@@ -1,15 +1,15 @@
 import { Player } from "./Player";
 import { IPlayerState } from "./IPlayerState";
-
 export class Rocket implements IPlayerState {
-   
     private Player: Player;
     private thrustEmitter: Phaser.GameObjects.Particles.ParticleEmitter;
     private isThrusting: boolean = false;
     private thrustPower: number = 1500; 
-    private maxUpwardSpeed: number = -600; 
-    private gravityScale: number = 500; 
-   // private size:{x:0,y:0}
+    private maxUpwardSpeed: number = -8000; 
+    private gravityScale: number = 400; 
+    private fallAcceleration: number = 150;
+    private maxFallSpeed: number = 600; 
+    
     constructor(scene: Phaser.Scene, player: Player) {
         this.Player = player;
         
@@ -40,14 +40,17 @@ export class Rocket implements IPlayerState {
         if (this.Player.body.velocity.y < this.maxUpwardSpeed) {
             this.Player.setVelocityY(this.maxUpwardSpeed);
         }
-        const velocityY = this.Player.body.velocity.y;
-        if (velocityY < -100) {
-            this.Player.setRotation(-0.5);
-        } else if (velocityY > 100) {
-            this.Player.setRotation(0.5);
-        } else {
-            this.Player.setRotation(0);
+        
+        if (this.Player.body.velocity.y > this.maxFallSpeed) {
+            this.Player.setVelocityY(this.maxFallSpeed);
         }
+        
+        const velocityY = this.Player.body.velocity.y;
+        const targetRotation = Phaser.Math.Clamp(velocityY * 0.003, -0.6, 0.6);
+        const currentRotation = this.Player.rotation;
+        
+        const newRotation = Phaser.Math.Linear(currentRotation, targetRotation, 0.1);
+        this.Player.setRotation(newRotation);
     }
 
     private handleThrust() {
@@ -55,15 +58,15 @@ export class Rocket implements IPlayerState {
             this.isThrusting = true;
             this.thrustEmitter.start();
         }
+        
         this.Player.setAccelerationY(-this.thrustPower);
         
         const currentVelocityY = this.Player.body.velocity.y;
-        if (currentVelocityY > -200) {
-            this.Player.setVelocityY(currentVelocityY - 50);
+        if (currentVelocityY > -100) {
+            this.Player.setVelocityY(currentVelocityY - 30); 
         }
         
         this.thrustEmitter.startFollow(this.Player, 0, 35);
-        
         this.thrustEmitter.setQuantity(8);
         this.thrustEmitter.setFrequency(20);
     }
@@ -74,7 +77,13 @@ export class Rocket implements IPlayerState {
             this.thrustEmitter.stop();
         }
         
-        this.Player.setAccelerationY(0);
+        const currentVelocityY = this.Player.body.velocity.y;
+        
+        if (currentVelocityY < 0) {
+            this.Player.setAccelerationY(this.fallAcceleration);
+        } else {
+            this.Player.setAccelerationY(this.fallAcceleration * 1.5);
+        }
     }
 
     Enter() {
@@ -86,9 +95,13 @@ export class Rocket implements IPlayerState {
         this.isThrusting = false;
         this.Player.setRotation(0);
         this.Player.enableCollision();
-        this.Player.body.setSize(80,43)
+        this.Player.body.setSize(80, 43);
 
-        this.Player.setVelocityY(0);
+        const currentVelocityY = this.Player.body.velocity.y;
+        if (Math.abs(currentVelocityY) > 200) {
+            this.Player.setVelocityY(currentVelocityY * 0.7);
+        }
+        
         this.Player.setAccelerationY(0);
     }
 
@@ -101,8 +114,8 @@ export class Rocket implements IPlayerState {
         
         this.Player.setAccelerationY(0);
         this.Player.setRotation(0);
-        this.Player.body.setSize(122,120)
+        this.Player.body.setSize(60, 60);
 
-        this.Player.setGravityY(1300);
+        this.Player.setGravityY(2300);
     }
 }

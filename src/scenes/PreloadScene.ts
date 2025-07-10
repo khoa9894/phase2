@@ -23,8 +23,23 @@ export class PreloadScene extends Phaser.Scene {
         this.load.image('dime', 'assets/dime.png');
         this.load.image('meode', 'assets/meode.png');
         this.load.image('ground', 'assets/ground.png');
+        this.load.image('boost', 'assets/boost.png');
+
         this.load.image('portal', 'assets/portal.png');
+                this.load.image('trampoline', 'assets/trampoline.png');
+
         this.load.image('name', 'assets/name.png');
+        this.load.image('pause','assets/pause.png')
+
+                this.load.image('replay','assets/replay.png')
+        this.load.audio('menuSound','assets/menuLoop.mp3')
+                this.load.audio('click','assets/playSound.ogg')
+                        this.load.audio('explode','assets/explode.ogg')
+                this.load.audio('music','assets/StereoMadness.mp3')
+
+
+        this.load.image('menu','assets/menu.png')
+        this.load.image('resume','assets/resume.png')
         this.load.image('butt', 'assets/butt.png');
 
         // Load background assets

@@ -20,7 +20,9 @@ export class CollisionManager {
         this.createSmallTriangleCollisions(map, layer);
         this.createDeathCubeCollisions(map, layer);
     }
-
+     public setSpeed(del:number){
+        this.tilemapSpeed=del
+    }
     private createCubeCollisions(map: Phaser.Tilemaps.Tilemap, layer: Phaser.Tilemaps.TilemapLayer) {
         for (let y = 0; y < map.height; y++) {
             for (let x = 0; x < map.width; x++) {
@@ -196,21 +198,77 @@ export class CollisionManager {
         });
     }
 
-    private handlePlayerDeath(player: any) {
-        console.log("Player died!");
-        player.disableCollision();
-        player.changeState(player.getDeathState());
+   private handlePlayerDeath(player: any) {
+    console.log("Player died!");
+    
+    if(this.scene.scene.key == 'PlayScene'){
+        const playScene = this.scene as any;
+        const currentScore = playScene.getCurrent();
+        const highScore = playScene.getHightScore();
+    
+        if (currentScore > highScore) {
+            playScene.setHighScore(currentScore);
 
-        this.scene.time.delayedCall(500, () => {
-            this.scene.scene.restart();
-        });
+            // Show new high score text
+            const screenWidth = this.scene.cameras.main.width;
+            const screenHeight = this.scene.cameras.main.height;
+            
+            const newHighScoreText = this.scene.add.text(
+                screenWidth / 2, 
+                screenHeight / 2 - 100, 
+                `NEW HIGH SCORE!\n${currentScore}%`, 
+                {
+                    fontSize: '32px',
+                    color: '#ffff00',
+                    fontFamily: 'Arial',
+                    fontStyle: 'bold',
+                    align: 'center'
+                }
+            );
+            newHighScoreText.setOrigin(0.5);
+            newHighScoreText.setScrollFactor(0);
+            newHighScoreText.setDepth(1000);
+            
+            // Add glow effect
+            newHighScoreText.setStroke('#ff8800', 4);
+            
+            // Animation effect
+            this.scene.tweens.add({
+                targets: newHighScoreText,
+                scaleX: 1.2,
+                scaleY: 1.2,
+                duration: 500,
+                yoyo: true,
+                repeat: 2,
+                ease: 'Power2'
+            });
+            
+            this.scene.time.delayedCall(3000, () => {
+                this.scene.tweens.add({
+                    targets: newHighScoreText,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => {
+                        newHighScoreText.destroy();
+                    }
+                });
+            });
+        }
     }
+    
+    player.disableCollision();
+    player.changeState(player.getDeathState());
 
-    update() {
+    this.scene.time.delayedCall(500, () => {
+        this.scene.scene.restart();
+    });
+}
+
+    update(delta:number) {
         const movement = this.tilemapSpeed * this.tilemapDirection;        
         [...this.triangleCollisions, ...this.smallTriangleCollisions, ...this.cubeCollisions, ...this.deathZones]
             .forEach(collision => {
-                collision.x += movement;
+                collision.x += movement*delta;
                 if (collision.body) {
                     collision.body.updateFromGameObject();
                 }

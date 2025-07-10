@@ -5,7 +5,8 @@ export class MenuScene extends Phaser.Scene {
     private listGround: Phaser.Physics.Arcade.Sprite[] = [];
     private tilemapSpeed: number = 6;
     private tilemapDirection: number = -1;
-    private numGround = Math.round(window.innerWidth / 128)+1;
+    private numGround = Math.round(2400 / 128) + 1;
+    private menuMusic: Phaser.Sound.BaseSound | undefined; 
 
     constructor() {
         super('MenuScene');
@@ -18,13 +19,37 @@ export class MenuScene extends Phaser.Scene {
         
         const logo = this.add.image(screenWidth/2, screenHeight/4, 'name');
         logo.setScale(2);
+        this.playMenuMusic();
 
         this.createPlayButton(screenWidth, screenHeight);
 
-        // Create ground
         this.createGround();
-    }
+        const savedHighScore = localStorage.getItem('highScore');
+const highScore = savedHighScore ? parseFloat(savedHighScore) : 0;
 
+this.add.text(
+    this.cameras.main.width-300, 
+    30,
+    `High Score: ${highScore}`,
+    {
+        font: '32px Arial',
+        color: '#ffff00',
+        stroke: '#000000',
+        strokeThickness: 4
+    }
+).setScrollFactor(0).setDepth(1000);
+    }
+   private playMenuMusic() {
+           this.sound.stopAll();
+
+
+        this.menuMusic = this.sound.add('menuSound', {
+            volume: 0.5, 
+            loop: true 
+        });
+        
+        this.menuMusic.play();
+    }
     private createPlayButton(screenWidth: number, screenHeight: number) {
         const playButton = this.add.image(screenWidth/2, screenHeight/2, 'butt')
             .setInteractive() 
@@ -42,7 +67,11 @@ export class MenuScene extends Phaser.Scene {
 
 
 
-        playButton.on('pointerup', () => {            
+        playButton.on('pointerup', () => {       
+        this.sound.play('click', { volume: 0.7 });
+     if (this.menuMusic) {
+            this.menuMusic.stop();
+        }
             this.time.delayedCall(100, () => {
                 this.scene.start('PlayScene');
             });
@@ -55,7 +84,7 @@ export class MenuScene extends Phaser.Scene {
         
         for (let i = 0; i <= this.numGround; i++) {
             const x = i * 128+64;
-            const y = window.innerHeight - 128 / 2;
+            const y = 900- 128 / 2;
             const ground = this.physics.add.staticSprite(x, y, 'ground');
             ground.setImmovable(true);
             

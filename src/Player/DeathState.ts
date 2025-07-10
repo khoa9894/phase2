@@ -18,7 +18,7 @@ export class DeathState implements IPlayerState {
     
     Enter(): void {
         this.deathTimer = 0;
-        
+        this.scene.sound.play('explode', { volume: 0.7 });
         // Stop player movement
         this.player.setVelocity(0, 0);
         this.player.setAcceleration(0, 0);
@@ -29,21 +29,16 @@ export class DeathState implements IPlayerState {
     Update(deltaTime: number): void {
         this.deathTimer += deltaTime;
         
-        // Update particle positions and fade them out
         this.deathParticles.children.entries.forEach((particle: any) => {
             if (particle.active) {
-                // Apply gravity to particles
                 particle.velocityY += 800 * (deltaTime / 1000);
                 
-                // Update position
                 particle.x += particle.velocityX * (deltaTime / 1000);
                 particle.y -= particle.velocityY * (deltaTime / 1000);
                 
-                // Fade out over time
                 const fadeProgress = this.deathTimer / this.DEATH_DURATION;
                 particle.alpha = Math.max(0, 1 - fadeProgress);
                 
-                // Rotate particles
                 particle.rotation += particle.rotationSpeed * (deltaTime / 1000);
                 
                 if (particle.alpha <= 0 || particle.y > this.scene.cameras.main.height + 150+128*8) {

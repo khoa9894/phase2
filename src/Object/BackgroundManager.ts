@@ -11,7 +11,9 @@ export class BackgroundManager {
         this.tilemapDirection = tilemapDirection;
         this.createBackground();
     }
-
+    public setSpeed(del:number){
+        this.tilemapSpeed=del
+    }
     private createBackground() {
         const screenWidth = this.scene.cameras.main.width;
         const screenHeight = this.scene.cameras.main.height;

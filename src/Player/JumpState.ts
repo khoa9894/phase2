@@ -16,12 +16,13 @@ export class JumpState implements IPlayerState {
     Enter() {
         this.Player.setVelocityY(-1100);
         this.isRotating = true;
-        
+        this.Player.isJump=false;
         this.startAngle = this.Player.angle;
         this.targetAngle = this.startAngle + 180;
     }
 
     Exit() {
+                this.Player.isJump=false;
         this.isRotating = false;
     }
 

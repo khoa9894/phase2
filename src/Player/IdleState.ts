@@ -9,7 +9,7 @@ export class IdleState implements IPlayerState {
         const particles = scene.add.particles('particle'); 
         this.emitter = particles.createEmitter({
             speed: 800,
-            lifespan: 300,
+            lifespan:300,
             scale: { start: 0.7, end: 0.1 },
             rotate: { random: true, start: 0, end: 360 },
             angle: { min: 180, max: 200 },
@@ -34,7 +34,7 @@ export class IdleState implements IPlayerState {
         const randomY = Phaser.Math.Between(10, 30);
         this.emitter.startFollow(this.Player, -70, randomY);
         
-        if(Phaser.Input.Keyboard.JustDown(this.Player.getJumpKey())){
+        if(Phaser.Input.Keyboard.JustDown(this.Player.getJumpKey())|| this.Player.isJump){
             this.Player.changeState(this.Player.getJumpState())
         }
     }
