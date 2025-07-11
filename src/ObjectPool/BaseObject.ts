@@ -1,7 +1,7 @@
 export abstract class BaseObstacle extends Phaser.Physics.Arcade.Sprite {
     public scene: Phaser.Scene;
     protected player: any;
-    protected tilemapSpeed: number = 1;
+    protected tilemapSpeed: number = 400;
     protected tilemapDirection: number = -1;
     
     constructor(scene: Phaser.Scene, player: any, x: number, y: number, texture: string) {
@@ -18,10 +18,7 @@ export abstract class BaseObstacle extends Phaser.Physics.Arcade.Sprite {
     protected abstract setupCollisions(): void;
     
     public updatePosition(movement: number, delta: number): void {
-        this.x += movement * delta;
-        if (this.body) {
-            this.body.updateFromGameObject();
-        }
+ this.x += movement ;
     }
 
     public setSpeed(speed: number, direction: number): void {

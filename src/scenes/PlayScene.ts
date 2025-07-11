@@ -1,7 +1,6 @@
 import { ObstacleManager } from './../ObjectPool/ObjectManager';
 import {BackgroundManager} from '../Object/BackgroundManager'
-import {CollisionManager} from '../Object/Collision'
-import {Portal} from '../ObjectPool/Portal'
+
 import { Player } from './../Player/Player';
 import { DeathState } from './../Player/DeathState';
 import { Pause } from '~/Object/Pause';
@@ -10,12 +9,13 @@ import { VictoryOverlay } from '~/Object/Win';
 export class PlayScene extends Phaser.Scene {
     private ObstacleManager:ObstacleManager|undefined
     private player: any;
+    private fpsText: Phaser.GameObjects.Text | undefined;
     private offset: number = 128 * 8;
     private EndPortal:number=39180
     private backgroundManager: BackgroundManager | undefined;
     private listGround: Phaser.Physics.Arcade.Sprite[] = [];
-    private tilemapSpeed: number = 0.6;
-    private originalTilemapSpeed: number = 0.6; 
+    private tilemapSpeed: number =0.9;
+    private originalTilemapSpeed: number = 0.9; 
     private tilemapDirection: number = -1;
     private numGround = Math.round(2400 / 128) + 1;
     private pauseManager: Pause | undefined;
@@ -29,7 +29,6 @@ export class PlayScene extends Phaser.Scene {
     private progressBarFill: Phaser.GameObjects.Rectangle | undefined;
     private HighScore: number=0;
     private currentScore:number=0;
-    private startX: number = 0;
     private endX: number = 0;
     private progressBarWidth: number = 300;
     private progressBarHeight: number = 20;
@@ -44,9 +43,9 @@ export class PlayScene extends Phaser.Scene {
         const screenWidth = this.cameras.main.width;
         const screenHeight = this.cameras.main.height;
         const savedHighScore = localStorage.getItem('highScore');
-if (savedHighScore) {
-    this.HighScore = parseFloat(savedHighScore);
-}
+        if (savedHighScore) {
+            this.HighScore = parseFloat(savedHighScore);
+        }
         // Start background music
         this.startBackgroundMusic();
 
@@ -74,51 +73,57 @@ if (savedHighScore) {
         // Create ground
         this.createGround();
         this.ObstacleManager = new ObstacleManager(this, this.player);
-         this.createTilemap(screenWidth, screenHeight);
+        this.createTilemap(screenWidth, screenHeight);
         // Set start position
-        this.startX = screenWidth / 4;
         
         // Create portal
         
-       this.EndPortal= this.endX = 27000;
+       this.EndPortal= this.endX = 39180;
         
         // Create progress bar
         this.createProgressBar();
-        
+        this.fpsText = this.add.text(
+                this.cameras.main.width - 120,
+                10,
+                'FPS: 0',
+                { font: '20px Arial', color: '#00ff00', stroke: '#000', strokeThickness: 2 }
+            );
+        this.fpsText.setScrollFactor(0);
+        this.fpsText.setDepth(2000);
   
         
         this.setupCollisions();
-     const touchArea = this.add.rectangle(
-    screenWidth / 2,
-    screenHeight / 2,
-    screenWidth,
-    screenHeight,
-    0xff0000,
-    0 
-);
-touchArea.setScrollFactor(0);
-touchArea.setInteractive();
+            const touchArea = this.add.rectangle(
+            screenWidth / 2,
+            screenHeight / 2,
+            screenWidth,
+            screenHeight,
+            0xff0000,
+            0 
+        );
+        touchArea.setScrollFactor(0);
+        touchArea.setInteractive();
 
-touchArea.on('pointerdown', () => {
-    if (this.player) {
-        this.player.triggerJump();
-    }
-});
+        touchArea.on('pointerdown', () => {
+            if (this.player) {
+                this.player.triggerJump();
+            }
+        });
         // Reset victory state
-        this.hasWon = false;
-        this.attemptText = this.add.text(
-    20, 
-    60, 
-    `Attempt: ${this.attemt}`,
-    {
-        font: '40px Arial',
-        color: '#ffffff',
-        stroke: '#000000',
-        strokeThickness: 3
-    }
-);
-this.attemptText.setScrollFactor(0);
-this.attemptText.setDepth(1002);
+                this.hasWon = false;
+                this.attemptText = this.add.text(
+            20, 
+            60, 
+            `Attempt: ${this.attemt}`,
+            {
+                font: '40px Arial',
+                color: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 3
+            }
+        );
+        this.attemptText.setScrollFactor(0);
+        this.attemptText.setDepth(1002);
     }
     public setAttemt(){
          this.attemt++;
@@ -316,7 +321,10 @@ this.attemptText.setDepth(1002);
         this.victoryOverlay.update();
     }
 
-    
+    if (this.fpsText) {
+    const fps = (1000 / delta).toFixed(1);
+    this.fpsText.setText(`FPS: ${fps}`);
+}
     if (this.victoryOverlay && this.victoryOverlay.visible) {
         return;
     }
@@ -358,8 +366,9 @@ this.attemptText.setDepth(1002);
         }
        
         
-        let movement = this.tilemapSpeed * this.tilemapDirection;
-       this.EndPortal+=movement*delta
+        let movement = this.tilemapSpeed * this.tilemapDirection*delta;
+        
+       this.EndPortal+=movement
         
         if(this.ObstacleManager) this.ObstacleManager.update(movement, delta);
 
@@ -378,8 +387,8 @@ this.attemptText.setDepth(1002);
 private updateGround(movement: number) {
     for (let i = 0; i <= this.numGround; i++) {
         this.listGround[i].x += movement;
-        if (this.listGround[i].x + 128 < 0) {
-            this.listGround[i].x = this.numGround * 128;
+        if (this.listGround[i].x + 128 <= 0) {
+            this.listGround[i].x = this.numGround * 127;
         }
     }
 }

@@ -16,7 +16,10 @@ const config: Phaser.Types.Core.GameConfig = {
         width: 2400,
         height: 900
     },
-     
+    //  fps: {
+    //     target: 60,
+        
+    // },
     physics: {
         default: 'arcade',
         
@@ -34,15 +37,5 @@ game.scene.start('PreloadScene')
 
 document.body.style.backgroundColor = '#000'
 
-// Debug: Thêm border cho canvas
-game.events.once('ready', () => {
-    const canvas = game.canvas
-    if (canvas) {
-        canvas.style.border = '2px solid red'
-        canvas.style.boxSizing = 'border-box'
-        console.log('Canvas dimensions:', canvas.width, 'x', canvas.height)
-        console.log('Canvas display size:', canvas.style.width, 'x', canvas.style.height)
-    }
-})
 
 export default game

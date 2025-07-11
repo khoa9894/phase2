@@ -20,6 +20,7 @@ export class DeathState implements IPlayerState {
         this.deathTimer = 0;
         this.scene.sound.play('explode', { volume: 0.7 });
         // Stop player movement
+        console.log(this.player.body.position.y)
         this.player.setVelocity(0, 0);
         this.player.setAcceleration(0, 0);
         this.createExplosionEffect();

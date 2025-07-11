@@ -15,9 +15,9 @@ export class Trampoline extends BaseObstacle {
     protected setupPhysics(): void{}
     protected setupCollisions(): void {
         this.scene.physics.add.overlap(this.player, this, () => {
+
             if ( this.player.getCurrentState() == this.player.getJumpState() && Phaser.Input.Keyboard.JustDown(this.scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE))) {
                 this.player.changeState(this.player.getDoubleJump());
-                
             }
         });
     }
